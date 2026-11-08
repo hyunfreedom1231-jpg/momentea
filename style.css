@@ -624,9 +624,7 @@ input { font: inherit; }
 .rv-q .seg-slider { left: 3.89px; top: 45px; width: 352.11px; }
 .rv-fade { height: 188px; background: linear-gradient(to top, rgba(255,255,255,.96) 60.1%, rgba(255,255,255,0) 104.8%); }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}
+/* 전시용 시연이라 아이폰의 '동작 줄이기' 설정과 관계없이 모든 모션을 그대로 보여줌 */
 
 /* 검색 입력 표시 + 깜빡이는 커서 */
 .searchbar .sbx-typed { display: none; flex: 1; min-width: 0; height: 100%; align-items: center; font: 600 16px/20px var(--f); letter-spacing: -.64px; color: #111; white-space: nowrap; overflow: hidden; }
