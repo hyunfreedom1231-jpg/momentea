@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="모먼티">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="icon" href="assets/icon-192.png">
+<title>모먼티</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/icons.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="device" id="device">
+
+    <!-- 상태 바 (모든 화면 공통) -->
+    <div class="statusbar" id="statusbar"><span class="sb-time">9:41</span><i class="sb-levels ic i-sb_levels"></i></div>
+
+    <!-- 1. 온보딩 -->
+    <section class="screen" id="s-splash" data-sb="dark">
+      <div class="splash-logo"><i class="ic i-logo"></i></div>
+    </section>
+
+    <!-- 2. 홈 -->
+    <section class="screen" id="s-home" data-sb="dark">
+      <div class="home-panes" id="homePanes">
+        <div class="pane scroll" data-pane="recent" id="paneRecent"></div>
+        <div class="pane scroll" data-pane="popular" id="panePopular"></div>
+        <div class="pane scroll" data-pane="similar" id="paneSimilar"></div>
+      </div>
+      <header class="home-head" id="homeHead">
+        <div class="searchbar is-idle" id="homeSearch" style="top:78px">
+          <div class="sbx-left press-soft" data-act="search-focus"><i class="ic m i-magnify c-505"></i><span class="sbx-ph">지금 어떤 차를 마시고 있나요?</span></div>
+          <div class="sbx-right">
+            <button class="icbtn press-ic" data-act="voice" aria-label="음성 검색"><i class="ic m i-mic c-505"></i></button>
+            <button class="icbtn press-ic" data-act="photo" aria-label="사진 검색"><i class="ic m i-camera c-505"></i></button>
+          </div>
+        </div>
+        <div class="tabchips" id="homeChips">
+          <button class="tchip press is-on" data-tab="recent"><i class="ic i-tea1"></i><span>최근 기록</span></button>
+          <button class="tchip press" data-tab="popular"><i class="ic i-tea2"></i><span>현재 인기</span></button>
+          <button class="tchip press" data-tab="similar"><i class="ic i-tea3 w22"></i><span>취향 추천</span></button>
+        </div>
+      </header>
+      <nav class="tabbar" data-active="home"></nav>
+    </section>
+
+    <!-- 3. 검색 (타이핑) -->
+    <section class="screen" id="s-search" data-sb="dark">
+      <div class="searchbar is-idle" id="searchBar" style="top:78px">
+        <div class="sbx-left"><i class="ic m i-magnify c-505 sb-ic"></i><input id="searchInput" class="sbx-input" type="text" placeholder="지금 어떤 차를 마시고 있나요?" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="none" enterkeyhint="search"><span class="sbx-typed" id="searchTyped" aria-hidden="true"></span></div>
+        <div class="sbx-right">
+          <button class="icbtn press-ic" data-act="voice" aria-label="음성 검색"><i class="ic m i-mic c-505 sb-ic"></i></button>
+          <button class="icbtn press-ic" data-act="photo" aria-label="사진 검색"><i class="ic m i-camera c-505 sb-ic"></i></button>
+        </div>
+      </div>
+      <div class="search-idle" id="searchIdle">
+        <div class="row-title" style="top:150px"><b class="trim">최근 검색어 </b><button class="txtbtn trim press-soft" id="clearRecent">전체 삭제</button></div>
+        <div class="kw-chips hscroll" id="recentChips" style="top:179px"></div>
+        <div class="empty-recent" id="emptyRecent">최근 검색어가 없어요</div>
+        <div class="row-title" style="top:240px"><b class="trim">카테고리에서 찾아보기</b></div>
+        <div class="cats" id="cats"></div>
+      </div>
+      <div class="suggest" id="suggest"></div>
+      <div class="keyboard" id="keyboard"></div>
+      <nav class="tabbar" data-active="shop"></nav>
+    </section>
+
+    <!-- 4. 검색 결과 -->
+    <section class="screen" id="s-results" data-sb="dark">
+      <div class="searchbar is-result press-soft" id="resultBar" style="top:78px">
+        <div class="sbx-left"><i class="ic m i-magnify c-505"></i><span class="sbx-q" id="resultQ"></span></div>
+        <div class="sbx-right"><button class="icbtn press-ic" id="resultClear" aria-label="검색어 지우기"><i class="ic i-close_circle"></i></button></div>
+      </div>
+      <div class="scroll results-scroll" id="resultScroll">
+        <div class="filter-chips hscroll" id="resultChips"></div>
+        <div class="result-title trim" id="resultTitle"></div>
+        <div class="result-list" id="resultList"></div>
+      </div>
+      <nav class="tabbar" data-active="shop"></nav>
+    </section>
+
+    <!-- 5. 음성 검색 -->
+    <section class="screen" id="s-voice" data-sb="dark">
+      <div class="navbar"><button class="icbtn nb-back press-ic" data-act="back"><i class="ic m i-back"></i></button><div class="nb-title">음성으로 검색하기</div><button class="icbtn nb-close press-ic" data-act="back"><i class="ic m i-close"></i></button></div>
+      <div class="v-prompt" id="vPrompt">찾으시려는 차의<br>제품명이나 차종을 말해주세요</div>
+      <div class="v-heard" id="vHeard"></div>
+      <div class="v-wave" id="vWave"><div class="v-bars" id="vBars"></div><i class="v-fade l"></i><i class="v-fade r"></i></div>
+      <button class="v-mic" id="vMic" aria-label="말하기"><i class="v-ring"></i><i class="v-ring r2"></i><i class="ic i-mic_btn_gray v-gray"></i><i class="ic i-mic_btn_green v-green"></i></button>
+      <div class="v-hint" id="vHint">‘녹차’처럼 차종을 말할 수도 있지만<br>‘히비스커스 보리차’같이 제품명으로 검색할 수 있어요</div>
+      <div class="v-listen" id="vListen">듣고 있어요</div>
+    </section>
+
+    <!-- 6. 사진 검색 -->
+    <section class="screen dark" id="s-photo" data-sb="light">
+      <div class="navbar light"><button class="icbtn nb-back press-ic" data-act="back"><i class="ic m i-back"></i></button><div class="nb-title">사진으로 검색하기</div><button class="icbtn nb-close press-ic" data-act="back"><i class="ic m i-close"></i></button></div>
+      <div class="cam" id="cam">
+        <img class="cam-img" id="camImg" src="assets/img/earlgrey.jpg" alt="">
+        <video class="cam-live" id="camLive" playsinline muted autoplay></video>
+        <div class="cam-hole" id="camHole"><i class="cam-scan"></i></div>
+        <div class="cam-msg" id="camMsg">사각형 안에 제품이 들어올 수 있도록 해주세요</div>
+      </div>
+      <div class="cam-flash" id="camFlash"></div>
+      <button class="cam-gallery press-ic" id="camGallery" aria-label="앨범"><i class="ic m i-gallery"></i></button>
+      <button class="cam-shutter" id="camShutter" aria-label="촬영"><i class="ic i-shutter"></i></button>
+      <button class="cam-flashbtn press-ic" id="camFlashBtn" aria-label="플래시"><i class="ic m i-flash"></i></button>
+    </section>
+
+    <!-- 7. 제품 상세 -->
+    <section class="screen" id="s-detail" data-sb="dark">
+      <div class="scroll detail-scroll" id="detailScroll"></div>
+      <div class="navbar solid" id="detailNav"><button class="icbtn nb-back press-ic" data-act="back"><i class="ic m i-back"></i></button><div class="nb-title" id="detailTitle">얼그레이 홍차</div><button class="icbtn nb-close press-ic" data-act="home"><i class="ic m i-close"></i></button></div>
+      <div class="cta-fade"></div>
+      <button class="btn-main press" id="detailStart" style="top:764px">이 차로 우리기 시작하기</button>
+    </section>
+
+    <!-- 8. 우리기 설정 -->
+    <section class="screen" id="s-brew" data-sb="dark">
+      <div class="brew-bg"></div>
+      <div class="brew-head"><p class="brew-title" id="brewTitle">얼그레이 홍차를<br>맛있게 우릴 준비를 하고 있어요</p><button class="icbtn brew-close press-ic" data-act="back"><i class="ic m i-close"></i></button></div>
+      <div class="sec-title trim" style="top:158px">차를 어떻게 마시고 싶으신가요?</div>
+      <div class="opt-row" style="top:183px">
+        <button class="opt press" data-opt="temp" data-val="hot"><i class="ic m i-fire24"></i><span>뜨겁게 마실래요</span></button>
+        <button class="opt press" data-opt="temp" data-val="cold"><i class="ic m i-cool24"></i><span>차갑게 마실래요</span></button>
+      </div>
+      <div class="sec-title trim" style="top:311px">차 준비를 도와드릴까요?</div>
+      <div class="opt-row" style="top:336px">
+        <button class="opt press" data-opt="guide" data-val="guide"><i class="ic m i-coffee24"></i><span>안내가 필요해요</span></button>
+        <button class="opt press" data-opt="guide" data-val="none"><i class="ic m i-coffeeoff24"></i><span>없어도 괜찮아요</span></button>
+      </div>
+      <div class="sec-title trim" style="top:464px">차는 얼마나 진하게 우릴까요?</div>
+      <div class="seg-slider" id="slStrength" style="top:493px"></div>
+      <div class="sec-title trim" style="top:579.8px">차를 몇 번 더 우려 마시고 싶으신가요?</div>
+      <div class="seg-slider" id="slRepeat" style="top:608.8px"></div>
+      <button class="btn-main is-disabled press" id="brewStart" style="top:729px">이 차로 우리기 시작하기</button>
+      <button class="btn-sub press-soft" id="brewDefault" style="top:782px"><i class="ic m i-check18"></i><span class="trim">기본 설정으로 시작하기</span></button>
+    </section>
+
+    <!-- 9. 카운트다운 -->
+    <section class="screen" id="s-count" data-sb="dark">
+      <div class="tbg"><img id="countBg" src="assets/img/v_black.jpg" alt=""></div>
+      <div class="count-dim"></div>
+      <div class="vk-note" id="vkNote"></div>
+      <div class="count-ring">
+        <svg viewBox="0 0 160 160" width="160" height="160"><circle cx="80" cy="80" r="78.5" class="cr-track"/><circle cx="80" cy="80" r="78.5" class="cr-arc" id="countArc"/></svg>
+        <div class="count-num" id="countNum">3</div>
+      </div>
+    </section>
+
+    <!-- 10. 타이머 -->
+    <section class="screen" id="s-timer" data-sb="dark">
+      <div class="tbg"><video id="steepVid" src="assets/video/black.mp4" poster="assets/img/v_black.jpg" data-kind="black" muted playsinline preload="auto" disablepictureinpicture></video></div>
+      <div class="timer-fade"></div>
+      <div class="timer-stack" id="timerStack">
+        <div class="tip-card" id="tipCard"><i class="ic i-leaf_timer"></i><p id="tipText"></p></div>
+        <div class="timer-card is-expanded" id="timerCard">
+          <div class="tc-collapsed">
+            <b class="tc-name-s" id="tcNameS">얼그레이 홍차</b><span class="tc-round-s" id="tcRoundS">1회차</span><span class="tc-roundtime-s" id="tcRoundTimeS">00:00:00</span>
+          </div>
+          <div class="tc-big" id="tcBig">00:00:00</div>
+          <div class="tc-ctrl">
+            <button class="tc-play press-ic" id="tcPlay" aria-label="일시정지/재생"><i class="ic i-play tc-i-play"></i><i class="tc-i-pause"><b></b><b></b></i></button>
+            <button class="tc-stop press-ic" id="tcStop" aria-label="정지"><i class="ic i-stop"></i></button>
+          </div>
+          <button class="tc-toggle press-ic" id="tcToggle" aria-label="펼치기/접기"><i class="ic m i-chev_up"></i></button>
+          <div class="tc-expanded">
+            <i class="tc-line"></i>
+            <b class="tc-name" id="tcName">얼그레이 홍차</b>
+            <span class="tc-meta" id="tcMeta">잎차형 | 따뜻하게 | 보통 진하기로</span>
+            <div class="tc-rounds" id="tcRounds"></div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-main is-dark press" id="timerDone" style="top:763px">이제 다 마셨어요</button>
+      <div class="alarm" id="alarm">
+        <div class="alarm-card" id="alarmCard">
+          <p class="al-title">지금이 가장 맛있을 순간이에요</p>
+          <p class="al-desc" id="alarmDesc">티백을 제거하고 차를 즐겨주세요. 다시 시작하고 싶다면<br>재생 버튼을 눌러 2회차를 이어갈 수 있어요.</p>
+          <button class="al-btn green press" id="alarmDone">이제 다 마셨어요</button>
+          <button class="al-btn gray press" id="alarmMore">한 번 더 마실래요</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. 후기 기록 -->
+    <section class="screen" id="s-review" data-sb="dark">
+      <div class="scroll review-scroll" id="reviewScroll">
+        <div class="rv-hero">
+          <div class="rv-img"><img id="rvImg" src="assets/img/earlgrey.jpg" alt=""></div>
+          <b class="rv-name" id="rvName">아마드티 얼그레이 홍차</b>
+          <div class="rv-meta"><span><i class="ic m i-leaf12"></i><em id="rvMeta">잎차형 | 따뜻하게 | 보통 진하기로</em></span><span><i class="ic m i-timer12"></i><em id="rvTime">04:12:34</em></span></div>
+        </div>
+        <div class="rv-qs" id="rvQs"></div>
+      </div>
+      <div class="rv-bar" id="rvBar">
+        <div class="rv-head"><b>차를 마신 후기 기록하기</b><button class="icbtn rv-close press-ic" data-act="skip-review"><i class="ic m i-close_w"></i></button></div>
+      </div>
+      <div class="cta-fade rv-fade"></div>
+      <button class="btn-main press" id="reviewSave" style="top:729px">차를 마신 후기 기록하기</button>
+      <button class="btn-sub press-soft" data-act="skip-review" style="top:782px"><span class="trim">이번 차는 기록하지 않을래요</span></button>
+    </section>
+
+    <!-- 12. 마이페이지 -->
+    <section class="screen" id="s-mypage" data-sb="light">
+      <div class="scroll mp-scroll" id="mpScroll">
+        <div class="mp-head">
+          <div class="mp-avatar"><img src="assets/img/avatar.jpg" alt=""></div>
+          <button class="mp-edit press-ic" id="mpEdit" aria-label="프로필 편집"><i class="ic m i-mp_edit"></i></button>
+          <b class="mp-name trim">케로로님</b>
+          <div class="mp-stats"><span><i class="ic m i-mp_heart"></i><em class="trim">134</em></span><span><i class="ic m i-mp_timer"></i><em class="trim" id="mpBrews">25</em></span></div>
+        </div>
+        <div class="sec mp-sec">
+          <div class="sec-head" style="height:auto"><b class="trim">이번 주에 즐긴 차를 모아봤어요</b></div>
+          <div class="week mp-week" style="margin-top:16px">
+            <div><div class="week-t"><span class="trim" id="mpWeekDiff"></span><b class="trim" id="mpWeekCount"></b></div>
+            <div class="week-days" id="mpWeekDays"></div></div>
+            <button class="week-btn press" id="mpWeekBtn"><span class="trim">오늘의 차 추천받기</span></button>
+          </div>
+        </div>
+        <div class="sec mp-sec2">
+          <div class="sec-head" style="height:auto"><b class="trim">좋아하는 차로 간단하게 시작해요</b></div>
+          <div class="mp-favs hscroll" id="mpFavs"></div>
+        </div>
+      </div>
+      <nav class="tabbar" data-active="face"></nav>
+    </section>
+
+    <!-- 13. 설정 -->
+    <section class="screen" id="s-settings" data-sb="dark">
+      <div class="set-list" id="setList"></div>
+      <button class="set-logout press-soft" id="setLogout"><span class="trim">로그아웃</span></button>
+      <nav class="tabbar" data-active="cog"></nav>
+    </section>
+
+    <!-- 12. 체험 종료 (QR 체험 모드) -->
+    <section class="screen" id="s-end" data-sb="dark">
+      <div class="end-img"><img id="endImg" src="assets/img/d_pansy.jpg" alt=""></div>
+      <div class="end-txt">
+        <span class="end-kicker"><i class="ic m i-leaf16"></i><em>모먼티 체험 완료</em></span>
+        <b id="endTitle">오늘의 차 한 잔을<br>기록했어요</b>
+        <p>사진 한 장으로 차를 찾고, 알맞게 우리고,<br>맛을 남기는 과정까지 함께해주셔서 고마워요.</p>
+      </div>
+      <button class="btn-main press" id="endAgain" style="top:729px">처음부터 다시 체험하기</button>
+      <button class="btn-sub press-soft" id="endHome" style="top:782px"><span class="trim">모먼티 둘러보기</span></button>
+    </section>
+
+    <div class="toast" id="toast"></div>
+    <div class="blocker" id="blocker"></div>
+  </div>
+</div>
+<audio id="bgm" src="assets/audio/bach-prelude-c.mp3" loop preload="auto"></audio>
+<script src="js/hangul.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/detail-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

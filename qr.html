@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>모먼티 전시 QR 코드</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+  :root { --green: #64c132; --green-d: #3f9d20; --ink: #111; --muted: #6b6b6b; --line: #e6e6e6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f4f6f1; color: var(--ink); font-family: "Pretendard MT", -apple-system, sans-serif; letter-spacing: -.02em; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 56px; }
+  h1 { font-size: 24px; margin: 0 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 20px; line-height: 1.6; font-size: 15px; }
+  .base { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; }
+  .base input { flex: 1 1 320px; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; background: #fff; }
+  .base button, .print { padding: 10px 16px; border: 0; border-radius: 8px; background: var(--green); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: #fff; border-radius: 16px; padding: 22px; text-align: center; border: 1px solid #eef0ea; break-inside: avoid; }
+  .card .k { display: inline-block; font-size: 12px; font-weight: 700; color: var(--green-d); background: #eef8e7; padding: 5px 10px; border-radius: 999px; }
+  .card h2 { font-size: 20px; margin: 12px 0 4px; }
+  .card p { margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .qr { width: 220px; height: 220px; margin: 0 auto; }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .url { margin-top: 12px; font-size: 11px; color: #8a8a8a; word-break: break-all; }
+  .card a.dl { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--green-d); font-weight: 700; }
+  @media print { body { background: #fff; } .base, .print, .lead, a.dl { display: none; } .card { border: 1px solid #ddd; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>모먼티 전시 QR 코드</h1>
+  <p class="lead">이 페이지를 웹 주소(https://…)로 열면 그 주소를 기준으로 QR 코드가 만들어져요.<br>
+  주소가 다르면 아래 칸에 웹앱 주소를 넣고 ‘QR 다시 만들기’를 누르세요. 인쇄하거나 SVG로 내려받아 쓰면 됩니다.</p>
+  <div class="base"><input id="base" spellcheck="false"><button id="make">QR 다시 만들기</button><button class="print" onclick="print()">인쇄하기</button></div>
+  <div class="grid" id="grid"></div>
+</main>
+<script src="js/qrcode.js"></script>
+<script>
+  const ITEMS = [
+    { q: '?flow=pansy', k: 'QR 체험', t: '보나플로 팬지꽃차', d: '팬지꽃차 사진 앞에 두는 QR · 사진 검색부터 후기까지' },
+    { q: '?flow=hibiscus', k: 'QR 체험', t: '데이오브힙 모닝힙 블렌드', d: '히비스커스 사진 앞에 두는 QR · 사진 검색부터 후기까지' },
+    { q: '', k: '자유 체험', t: '모먼티 웹앱', d: '처음 화면부터 자유롭게 둘러보기' }
+  ];
+  const input = document.getElementById('base');
+  input.value = location.href.replace(/qr\.html.*$/, '');
+  function make() {
+    let base = input.value.trim(); if (base && !/\/$/.test(base) && !/\.html$/.test(base)) base += '/';
+    document.getElementById('grid').innerHTML = ITEMS.map((it, i) => {
+      const url = base + it.q;
+      const qr = qrcode(0, 'M'); qr.addData(url); qr.make();
+      const svg = qr.createSvgTag({ cellSize: 8, margin: 2, scalable: true });
+      const blob = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      return `<div class="card"><span class="k">${it.k}</span><h2>${it.t}</h2><p>${it.d}</p><div class="qr">${svg}</div><div class="url">${url}</div><a class="dl" href="${blob}" download="momentea-qr-${i + 1}.svg">SVG로 내려받기</a></div>`;
+    }).join('');
+    if (/^file:/.test(base)) document.querySelector('.lead').insertAdjacentHTML('beforeend', '<br><b style="color:#c0392b">지금은 내 컴퓨터 파일 주소라 휴대폰에서 열리지 않아요. 웹에 올린 주소를 넣어주세요.</b>');
+  }
+  document.getElementById('make').onclick = make; make();
+</script>
+</body>
+</html>
