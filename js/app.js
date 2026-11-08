@@ -31,7 +31,32 @@
   const FLOW = { pansy: 'pansy', hibiscus: 'morninghip', morninghip: 'morninghip' }[FLOW_KEY] || null;
   let flowDone = false;
 
-  /* ---------------- 디바이스 스케일 ---------------- */
+  /* ---------------- 디바이스 스케일 ----------------
+     PC: 아이폰 13(390×844) 프레임을 창에 맞춰 축소.
+     휴대폰: 어떤 기종이든 가로를 꽉 채우고(390 기준으로 확대·축소), 세로는 기종에 맞춰 늘거나 줄어듦.
+       - 아래쪽에 붙은 요소(탭 바, 하단 버튼, 키보드 등)는 화면 아래 기준으로 따라 내려가거나 올라감
+       - 세로가 짧은 기종에서는 우리기 설정·체험 완료처럼 내용이 많은 화면의 간격을 조금씩 줄임
+       - 세로가 640보다 짧으면(아주 작은 화면) 그때만 전체를 축소 */
+  const BASE_H = 844, MIN_H = 640;
+  function anchorBottoms() {
+    // 기기 높이를 바꿔 보고, 위치가 고정된(top 기준) 요소 중 화면 아래쪽(640 이하)에 있는 것을 아래 기준으로 전환
+    const items = [];
+    $$('.screen').forEach(sc => Array.from(sc.children).forEach(c => { if (getComputedStyle(c).position === 'absolute') items.push(c); }));
+    device.style.height = BASE_H + 'px'; const a = items.map(c => [c.offsetTop, c.offsetHeight]);
+    device.style.height = (BASE_H + 100) + 'px'; const b = items.map(c => [c.offsetTop, c.offsetHeight]);
+    items.forEach((c, i) => {
+      const [y, h] = a[i];
+      if (b[i][0] === y && b[i][1] === h && y >= 640) { c.style.top = 'auto'; c.style.bottom = (BASE_H - y - h) + 'px'; }
+    });
+    device.style.height = BASE_H + 'px';
+    // 세로가 짧을 때 간격을 줄이는 화면들 — calc(원래 위치 + 줄어든 높이 × 비율)
+    const squeeze = (el, f, v) => { if (!el) return; const t = parseFloat(el.style.top || getComputedStyle(el).top); el.style.top = `calc(${t}px + var(${v || '--dyn'}) * ${f})`; };
+    const bt = $$('#s-brew > .sec-title, #s-brew > .opt-row, #s-brew > .seg-slider');
+    [.05, .067, .31, .33, .57, .585, .76, .77].forEach((f, i) => squeeze(bt[i], f));
+    squeeze($('#s-count .count-ring'), .5, '--dy');
+    ['#vPrompt', '#vHeard', '#vWave'].forEach(sel => squeeze($(sel), .5, '--dy'));
+  }
+  anchorBottoms();
   function fit() {
     const vw = window.innerWidth, vh = window.innerHeight;
     const REC = /[?&]rec\b/.test(location.search);       // 시연 영상 녹화용: 화면 전체를 기기 화면으로 채움
@@ -39,7 +64,15 @@
     document.documentElement.classList.toggle('is-phone', phone);
     // 실제 휴대폰(터치)에서는 기기 자체 상태 바가 있으므로 시안용 가짜 상태 바(9:41)를 숨김
     document.documentElement.classList.toggle('is-touch', phone && window.matchMedia('(pointer: coarse)').matches);
-    const s = phone ? Math.min(vw / 390, vh / 844) : Math.min(1, (vw - 48) / 390, (vh - 48) / 844);
+    let s, h = BASE_H;
+    if (phone) {
+      s = vw / 390; h = vh / s;
+      if (h < MIN_H) { h = MIN_H; s = vh / MIN_H; }
+      h = Math.round(h * 100) / 100;
+    } else s = Math.min(1, (vw - 48) / 390, (vh - 48) / BASE_H);
+    device.style.height = h + 'px';
+    device.style.setProperty('--dy', (h - BASE_H).toFixed(2) + 'px');
+    device.style.setProperty('--dyn', Math.min(0, h - BASE_H).toFixed(2) + 'px');
     device.style.setProperty('--s', s.toFixed(4));
   }
   window.addEventListener('resize', fit); fit();
