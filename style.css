@@ -716,7 +716,7 @@ input { font: inherit; }
 .end-kicker { display: flex; align-items: center; gap: 6px; font: 600 14px/1 var(--f); letter-spacing: -.56px; color: var(--green-d); }
 .end-kicker em { font-style: normal; }
 .end-kicker .ic { width: 14px; height: 14px; }
-.end-txt b { display: block; margin-top: 16px; font: 700 26px/1.32 var(--f); letter-spacing: -1.4px; color: #000; }
+.end-txt b { display: block; margin-top: 9px; font: 700 26px/1.32 var(--f); letter-spacing: -1.4px; color: #000; }
 .end-txt p { margin-top: 14px; font: 400 15px/1.6 var(--f); letter-spacing: -.7px; color: #6b6b6b; }
 
 /* 기종별 세로 길이 대응 (--dy = 기기 높이 − 844, --dyn = 짧을 때만 음수) */
@@ -725,5 +725,5 @@ input { font: inherit; }
 .cam-hole { top: calc(97.33px + var(--dyn) * .3); height: calc(389.33px + var(--dyn) * .8); }
 .cam-msg { top: auto; bottom: 54px; }
 .end-img { top: calc(102px + var(--dyn) * .1); height: calc(299px + var(--dyn) * .6); }
-.end-txt { top: calc(436px + var(--dyn) * .9); }
+.end-txt { top: calc(423px + var(--dyn) * .7); }   /* 이미지 아래 22px (짧은 화면에서도 같은 간격) */
 .cam { height: auto; bottom: 140px; }

@@ -836,7 +836,7 @@
       <div class="d-sec reveal-up" style="width:356px">
         <div class="sec-head" style="width:356px"><b class="trim">구매처 한눈에 보기</b>${ic('chev28')}</div>
         <div class="shop-tbl">
-          <div class="col c-name">${shops.map((x, i) => i === 0 ? `<span class="low">${x[0]}<span class="badge">최저가</span></span>` : `<span>${x[0]}</span>`).join('')}</div>
+          <div class="col c-name">${shops.map(x => `<span>${x[0]}</span>`).join('')}</div>
           <div class="col c-price">${shops.map((x, i) => `<span${i === 0 ? ' class="low"' : ''}>${won(x[1])}</span>`).join('')}</div>
           <div class="col c-ship">${shops.map(x => `<span>${x[2]}</span>`).join('')}</div>
         </div>
