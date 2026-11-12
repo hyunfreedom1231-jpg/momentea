@@ -736,5 +736,6 @@ input { font: inherit; }
 @media (display-mode: standalone) { html, body, .stage { background: #fff; } }
 /* iOS 홈 화면 웹 앱 + 투명 상태 바: 페이지 높이를 '화면 − 상태 바'로 잡아 아래 약 47pt가 잘리는 버그 →
    문서 높이를 상태 바만큼 늘려 화면 맨 아래까지 그려지게 함 */
-html.is-standalone, html.is-standalone body { height: calc(100% + env(safe-area-inset-top, 0px)); min-height: 100vh; background: #fff; }
-html.is-standalone .stage { top: 0; bottom: auto; height: calc(100% + env(safe-area-inset-top, 0px)); min-height: 100vh; }
+html.is-standalone { height: calc(100% + env(safe-area-inset-top, 0px)); background: #fff; }
+html.is-standalone body { height: 100%; background: #fff; }      /* body는 html과 같은 높이(상태 바를 두 번 더하지 않음) */
+html.is-standalone .stage { top: 0; bottom: auto; }
