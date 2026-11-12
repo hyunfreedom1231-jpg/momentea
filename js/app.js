@@ -57,10 +57,25 @@
     ['#vPrompt', '#vHeard', '#vWave'].forEach(sel => squeeze($(sel), .5, '--dy'));
   }
   anchorBottoms();
+  /* 실제 화면 높이 — iOS 홈 화면 웹 앱(standalone)은 처음 열 때 innerHeight를 상태 바 높이만큼 작게 알려주는
+     버그가 있어 아래에 빈 띠가 생김 → 여러 값 중 가장 큰 값, 웹 앱이면 기기 화면 높이(screen.height)를 사용 */
+  const STANDALONE = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  function viewH(vw) {
+    let h = Math.max(window.innerHeight, document.documentElement.clientHeight || 0, window.visualViewport ? window.visualViewport.height : 0);
+    if (STANDALONE && window.screen && vw <= 500) {
+      const sh = Math.max(screen.width, screen.height), sw = Math.min(screen.width, screen.height);
+      if (Math.abs(sw - vw) < 2) h = Math.max(h, sh);      // 세로 화면일 때만
+    }
+    return h;
+  }
   function fit() {
-    const vw = window.innerWidth, vh = window.innerHeight;
+    const vw = window.innerWidth;
     const REC = /[?&]rec\b/.test(location.search);       // 시연 영상 녹화용: 화면 전체를 기기 화면으로 채움
     const phone = vw <= 500 || REC;
+    const vh = phone ? viewH(vw) : window.innerHeight;
+    const stage = device.parentElement;
+    stage.style.height = phone ? vh + 'px' : '';
+    stage.style.bottom = phone ? 'auto' : '';
     document.documentElement.classList.toggle('is-phone', phone);
     // 실제 휴대폰(터치)에서는 기기 자체 상태 바가 있으므로 시안용 가짜 상태 바(9:41)를 숨김
     document.documentElement.classList.toggle('is-touch', phone && window.matchMedia('(pointer: coarse)').matches);
@@ -68,8 +83,7 @@
     /* 브라우저 탭(QR로 연 Safari·Chrome)에서는 기기 상태 바가 페이지 바깥에 따로 있으므로,
        시안의 상태 바 자리(위쪽 54px)를 화면 위로 밀어 올려 빈 여백이 생기지 않게 함.
        홈 화면에 추가한 웹 앱(standalone)은 상태 바가 페이지 위에 겹쳐 그려지므로 그대로 둠 */
-    const standalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-    const cut = (phone && !REC && !standalone && window.matchMedia('(pointer: coarse)').matches) ? SB_CUT : 0;
+    const cut = (phone && !REC && !STANDALONE && window.matchMedia('(pointer: coarse)').matches) ? SB_CUT : 0;
     if (phone) {
       s = vw / 390; h = vh / s;
       if (h < MIN_H) { h = MIN_H; s = vh / MIN_H; }
@@ -82,7 +96,9 @@
     device.style.setProperty('--dyn', Math.min(0, h - BASE_H).toFixed(2) + 'px');
     device.style.setProperty('--s', s.toFixed(4));
   }
-  window.addEventListener('resize', fit); fit();
+  window.addEventListener('resize', fit); window.addEventListener('orientationchange', () => setTimeout(fit, 300));
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+  window.addEventListener('pageshow', fit); fit(); setTimeout(fit, 400); setTimeout(fit, 1500);   // iOS가 화면 크기를 늦게 알려주는 경우 대비
   const scaleOf = () => device.getBoundingClientRect().width / 390;
 
   /* ---------------- 눌림 피드백 ---------------- */

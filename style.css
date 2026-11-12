@@ -31,6 +31,7 @@ input { font: inherit; }
   border-radius: 46px; transform: translateY(var(--ty, 0px)) scale(var(--s)); transform-origin: center center;
   box-shadow: 0 0 0 10px #111, 0 0 0 11px #2a2a2a, 0 40px 80px -20px rgba(0,0,0,.35), 0 18px 36px -18px rgba(0,0,0,.3);
   isolation: isolate; contain: layout paint; }
+.is-phone, .is-phone body { background: #fff; }
 .is-phone .stage { background: #fff; }
 .is-phone .device { border-radius: 0; box-shadow: none; }
 
@@ -731,3 +732,5 @@ input { font: inherit; }
 .device { --cut: 0px; }
 .toast { top: max(58px, calc(var(--cut) + 12px)); }
 .vk-note { top: max(62px, calc(var(--cut) + 14px)); }
+/* 홈 화면 웹 앱: 스크립트가 크기를 맞추기 전에도 배경이 흰색이 되도록 */
+@media (display-mode: standalone) { html, body, .stage { background: #fff; } }
