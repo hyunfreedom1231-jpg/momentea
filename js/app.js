@@ -60,8 +60,12 @@
   /* 실제 화면 높이 — iOS 홈 화면 웹 앱(standalone)은 처음 열 때 innerHeight를 상태 바 높이만큼 작게 알려주는
      버그가 있어 아래에 빈 띠가 생김 → 여러 값 중 가장 큰 값, 웹 앱이면 기기 화면 높이(screen.height)를 사용 */
   const STANDALONE = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  const vhProbe = document.createElement('div');
+  vhProbe.style.cssText = 'position:absolute;left:-9px;top:0;width:1px;height:100vh;visibility:hidden;pointer-events:none';
+  document.body.appendChild(vhProbe);
   function viewH(vw) {
     let h = Math.max(window.innerHeight, document.documentElement.clientHeight || 0, window.visualViewport ? window.visualViewport.height : 0);
+    if (STANDALONE) h = Math.max(h, document.body.clientHeight || 0, vhProbe.offsetHeight || 0);
     if (STANDALONE && window.screen && vw <= 500) {
       const sh = Math.max(screen.width, screen.height), sw = Math.min(screen.width, screen.height);
       if (Math.abs(sw - vw) < 2) h = Math.max(h, sh);      // 세로 화면일 때만

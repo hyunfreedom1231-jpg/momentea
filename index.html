@@ -15,6 +15,10 @@
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/icons.css">
 <link rel="stylesheet" href="style.css">
+<script>
+  /* 홈 화면 웹 앱이면 첫 화면을 그리기 전에 표시 (iOS 화면 높이 버그 대응용) */
+  if (navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)) document.documentElement.classList.add('is-standalone');
+</script>
 </head>
 <body>
 <div class="stage" id="stage">
