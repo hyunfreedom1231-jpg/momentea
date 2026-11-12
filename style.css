@@ -28,7 +28,7 @@ input { font: inherit; }
 .stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
   background: radial-gradient(1200px 800px at 50% 30%, #f4f6f1 0%, #e3e7df 60%, #d9ded4 100%); }
 .device { position: relative; width: 390px; height: 844px; flex: none; overflow: hidden; background: #fff;
-  border-radius: 46px; transform: scale(var(--s)); transform-origin: center center;
+  border-radius: 46px; transform: translateY(var(--ty, 0px)) scale(var(--s)); transform-origin: center center;
   box-shadow: 0 0 0 10px #111, 0 0 0 11px #2a2a2a, 0 40px 80px -20px rgba(0,0,0,.35), 0 18px 36px -18px rgba(0,0,0,.3);
   isolation: isolate; contain: layout paint; }
 .is-phone .stage { background: #fff; }
@@ -727,3 +727,7 @@ input { font: inherit; }
 .end-img { top: calc(102px + var(--dyn) * .1); height: calc(299px + var(--dyn) * .6); }
 .end-txt { top: calc(423px + var(--dyn) * .7); }   /* 이미지 아래 22px (짧은 화면에서도 같은 간격) */
 .cam { height: auto; bottom: 140px; }
+/* 브라우저 탭에서 위쪽 상태 바 자리를 잘라낸 만큼 알림 위치 보정 */
+.device { --cut: 0px; }
+.toast { top: max(58px, calc(var(--cut) + 12px)); }
+.vk-note { top: max(62px, calc(var(--cut) + 14px)); }

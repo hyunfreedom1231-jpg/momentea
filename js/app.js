@@ -37,7 +37,7 @@
        - 아래쪽에 붙은 요소(탭 바, 하단 버튼, 키보드 등)는 화면 아래 기준으로 따라 내려가거나 올라감
        - 세로가 짧은 기종에서는 우리기 설정·체험 완료처럼 내용이 많은 화면의 간격을 조금씩 줄임
        - 세로가 640보다 짧으면(아주 작은 화면) 그때만 전체를 축소 */
-  const BASE_H = 844, MIN_H = 640;
+  const BASE_H = 844, MIN_H = 640, SB_CUT = 54;
   function anchorBottoms() {
     // 기기 높이를 바꿔 보고, 위치가 고정된(top 기준) 요소 중 화면 아래쪽(640 이하)에 있는 것을 아래 기준으로 전환
     const items = [];
@@ -65,12 +65,19 @@
     // 실제 휴대폰(터치)에서는 기기 자체 상태 바가 있으므로 시안용 가짜 상태 바(9:41)를 숨김
     document.documentElement.classList.toggle('is-touch', phone && window.matchMedia('(pointer: coarse)').matches);
     let s, h = BASE_H;
+    /* 브라우저 탭(QR로 연 Safari·Chrome)에서는 기기 상태 바가 페이지 바깥에 따로 있으므로,
+       시안의 상태 바 자리(위쪽 54px)를 화면 위로 밀어 올려 빈 여백이 생기지 않게 함.
+       홈 화면에 추가한 웹 앱(standalone)은 상태 바가 페이지 위에 겹쳐 그려지므로 그대로 둠 */
+    const standalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    const cut = (phone && !REC && !standalone && window.matchMedia('(pointer: coarse)').matches) ? SB_CUT : 0;
     if (phone) {
       s = vw / 390; h = vh / s;
       if (h < MIN_H) { h = MIN_H; s = vh / MIN_H; }
-      h = Math.round(h * 100) / 100;
+      h = Math.round((h + cut) * 100) / 100;
     } else s = Math.min(1, (vw - 48) / 390, (vh - 48) / BASE_H);
     device.style.height = h + 'px';
+    device.style.setProperty('--cut', cut + 'px');
+    device.style.setProperty('--ty', (-cut * s / 2).toFixed(2) + 'px');
     device.style.setProperty('--dy', (h - BASE_H).toFixed(2) + 'px');
     device.style.setProperty('--dyn', Math.min(0, h - BASE_H).toFixed(2) + 'px');
     device.style.setProperty('--s', s.toFixed(4));
